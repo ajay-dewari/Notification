@@ -2,6 +2,10 @@ package com.dewari.ajay.notification;
 
 
 import android.app.Notification;
+import android.app.PendingIntent;
+import android.content.Intent;
+import android.media.RingtoneManager;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -21,6 +25,7 @@ public class MainActivity extends AppCompatActivity {
 
     private NotificationManagerCompat notificationManager;
     private EditText titleEditedText, messageEditedText;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -63,24 +68,46 @@ public class MainActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    public void sentNotificationOnChannel1(View v){
+    public void sentNotificationOnChannel1(View v) {
         String title = titleEditedText.getText().toString();
         String message = messageEditedText.getText().toString();
-        Notification notification = new NotificationCompat.Builder(this, CHANNEL_1_ID)
-                .setAutoCancel(true).setSmallIcon(R.drawable.ic_chennal_1_beenhere)
-                .setContentTitle(title).setContentText(message).setPriority(NotificationCompat.PRIORITY_HIGH)
-                .setCategory(NotificationCompat.CATEGORY_MESSAGE).build();
-
+        Notification notification = buildNotificationChannel1(title, message);
         notificationManager.notify(1, notification);
     }
 
-    public void sentNotificationOnChannel2(View v){
+    public void sentNotificationOnChannel2(View v) {
         String title = titleEditedText.getText().toString();
         String message = messageEditedText.getText().toString();
-        Notification notification = new NotificationCompat.Builder(this, CHANNEL_2_ID)
+        Notification notification = buildNotificationChannel2(title, message);
+        notificationManager.notify(2, notification);
+    }
+
+    private Notification buildNotificationChannel1(String title, String message) {
+        Uri soundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM);
+        return new NotificationCompat.Builder(this, CHANNEL_1_ID)
+                .setAutoCancel(true).setSmallIcon(R.drawable.ic_chennal_1_beenhere)
+                .setContentTitle(title).setContentText(message).setPriority(NotificationCompat.PRIORITY_HIGH)
+                .setCategory(NotificationCompat.CATEGORY_ALARM).setContentIntent(getContentIntent(title, message))
+                .addAction(R.drawable.ic_drafts_black_24dp, "Action", getActionPendingIntent(title, message))
+                .setSound(soundUri).build();
+    }
+
+    private Notification buildNotificationChannel2(String title, String message) {
+        return new NotificationCompat.Builder(this, CHANNEL_2_ID)
                 .setAutoCancel(true).setSmallIcon(R.drawable.ic_drafts_black_24dp)
                 .setContentTitle(title).setContentText(message).setPriority(NotificationCompat.PRIORITY_LOW).build();
+    }
 
-        notificationManager.notify(2, notification);
+    private PendingIntent getContentIntent(String title, String message) {
+        Intent activityIntent = new Intent(this, MainActivity.class);
+        return PendingIntent.getActivity(this, 0, activityIntent, 0);
+    }
+
+    private PendingIntent getActionPendingIntent(String title, String message) {
+        Intent broadcastIntent = new Intent(this, NotificationReceiver.class);
+        broadcastIntent.putExtra("title", title);
+        broadcastIntent.putExtra("message", message);
+        return PendingIntent.getBroadcast(this, 0,
+                broadcastIntent, PendingIntent.FLAG_UPDATE_CURRENT);
     }
 }
