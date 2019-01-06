@@ -69,7 +69,7 @@ public class MainActivity extends AppCompatActivity {
         Notification notification = new NotificationCompat.Builder(this, CHANNEL_1_ID)
                 .setAutoCancel(true).setSmallIcon(R.drawable.ic_chennal_1_beenhere)
                 .setContentTitle(title).setContentText(message).setPriority(NotificationCompat.PRIORITY_HIGH)
-                .setCategory(NotificationCompat.CATEGORY_MESSAGE).build();
+                .setCategory(NotificationCompat.CATEGORY_ALARM).build();
 
         notificationManager.notify(1, notification);
     }
