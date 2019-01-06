@@ -1,23 +1,36 @@
 package com.dewari.ajay.notification;
 
+
+import android.app.Notification;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.NotificationCompat;
+import android.support.v4.app.NotificationManagerCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.EditText;
+
+import static com.dewari.ajay.notification.NotificationApp.CHANNEL_1_ID;
+import static com.dewari.ajay.notification.NotificationApp.CHANNEL_2_ID;
 
 public class MainActivity extends AppCompatActivity {
 
+    private NotificationManagerCompat notificationManager;
+    private EditText titleEditedText, messageEditedText;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
+        notificationManager = NotificationManagerCompat.from(this);
+        titleEditedText = findViewById(R.id.title);
+        messageEditedText = findViewById(R.id.message);
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -48,5 +61,26 @@ public class MainActivity extends AppCompatActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    public void sentNotificationOnChannel1(View v){
+        String title = titleEditedText.getText().toString();
+        String message = messageEditedText.getText().toString();
+        Notification notification = new NotificationCompat.Builder(this, CHANNEL_1_ID)
+                .setAutoCancel(true).setSmallIcon(R.drawable.ic_chennal_1_beenhere)
+                .setContentTitle(title).setContentText(message).setPriority(NotificationCompat.PRIORITY_HIGH)
+                .setCategory(NotificationCompat.CATEGORY_MESSAGE).build();
+
+        notificationManager.notify(1, notification);
+    }
+
+    public void sentNotificationOnChannel2(View v){
+        String title = titleEditedText.getText().toString();
+        String message = messageEditedText.getText().toString();
+        Notification notification = new NotificationCompat.Builder(this, CHANNEL_2_ID)
+                .setAutoCancel(true).setSmallIcon(R.drawable.ic_drafts_black_24dp)
+                .setContentTitle(title).setContentText(message).setPriority(NotificationCompat.PRIORITY_LOW).build();
+
+        notificationManager.notify(2, notification);
     }
 }
